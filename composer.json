@@ -1,6 +1,6 @@
 {
     "name": "zerp/quotation",
-    "description": "Description for quotation package",
+    "description": "Sales quotation module for the Zerp ERP platform",
     "type": "library",
     "license": "MIT",
     "require": {},

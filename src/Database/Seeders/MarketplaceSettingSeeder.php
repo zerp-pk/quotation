@@ -18,7 +18,7 @@ class MarketplaceSettingSeeder extends Seeder
             $files = File::files($marketplaceDir);
             foreach ($files as $file) {
                 if (in_array($file->getExtension(), ['png', 'jpg', 'jpeg', 'gif', 'webp'])) {
-                    $screenshots[] = '/packages/workdo/Quotation/src/marketplace/' . $file->getFilename();
+                    $screenshots[] = '/packages/local/Quotation/src/marketplace/' . $file->getFilename();
                 }
             }
         }
@@ -33,7 +33,7 @@ class MarketplaceSettingSeeder extends Seeder
                 'sections' => [
                     'hero' => [
                         'variant' => 'hero1',
-                        'title' => 'Quotation Module for ERPGo SaaS',
+                        'title' => 'Quotation Module for Zerp',
                         'subtitle' => 'Streamline your quotation workflow with comprehensive tools and automated management.',
                         'primary_button_text' => 'Install Quotation Module',
                         'primary_button_link' => '#install',
@@ -55,19 +55,19 @@ class MarketplaceSettingSeeder extends Seeder
                                 'title' => 'Professional Quotation Creation & Management',
                                 'description' => 'Create professional sales quotations with detailed line items, product selection, and comprehensive pricing structures for accurate client proposals. Streamline the quotation process with automated calculations, customizable templates, and integrated product catalogs for efficient sales operations.',
                                 'keyPoints' => ['Professional quotation templates', 'Integrated product selection', 'Automated pricing calculations', 'Customizable proposal formats'],
-                                'screenshot' => '/packages/workdo/Quotation/src/marketplace/image1.png'
+                                'screenshot' => '/packages/local/Quotation/src/marketplace/image1.png'
                             ],
                             [
                                 'title' => 'Advanced Tax Calculations & Financial Management',
                                 'description' => 'Handle complex tax calculations and financial computations with multi-level tax structures and accurate pricing breakdowns for transparent client billing. Ensure compliance with automated tax calculations, detailed financial summaries, and comprehensive cost analysis for professional quotation accuracy.',
                                 'keyPoints' => ['Multi-level tax calculations', 'Automated financial summaries', 'Transparent pricing breakdowns', 'Compliance-ready tax handling'],
-                                'screenshot' => '/packages/workdo/Quotation/src/marketplace/image2.png'
+                                'screenshot' => '/packages/local/Quotation/src/marketplace/image2.png'
                             ],
                             [
                                 'title' => 'Quotation Lifecycle & Conversion Management',
                                 'description' => 'Manage complete quotation lifecycle from creation to conversion with status tracking, client approval workflows, and seamless document conversion capabilities. Track quotation performance with acceptance rates, follow-up management, and automated conversion to invoices or contracts for streamlined sales processes.',
                                 'keyPoints' => ['Complete lifecycle tracking', 'Client approval workflows', 'Automated document conversion', 'Performance analytics dashboard'],
-                                'screenshot' => '/packages/workdo/Quotation/src/marketplace/image3.png'
+                                'screenshot' => '/packages/local/Quotation/src/marketplace/image3.png'
                             ]
                         ]
                     ],
