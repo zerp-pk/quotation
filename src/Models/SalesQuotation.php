@@ -2,10 +2,12 @@
 
 namespace Zerp\Quotation\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Warehouse;
 use Spatie\Permission\Models\Permission;
@@ -58,6 +60,31 @@ class SalesQuotation extends Model
     public function items(): HasMany
     {
         return $this->hasMany(SalesQuotationItem::class, 'quotation_id');
+    }
+
+    /**
+     * The one definition of which quotations the current user may see, used by
+     * both the list/show endpoints and the dashboard so their scopes cannot
+     * drift: a manager sees the whole company, an owner sees quotations they
+     * created or are the customer on, and a client never sees drafts. Anyone
+     * without either permission sees nothing.
+     */
+    public function scopeVisibleTo(Builder $query): Builder
+    {
+        return $query->where(function ($q) {
+            if (Auth::user()->can('manage-any-quotations')) {
+                $q->where('created_by', creatorId());
+            } elseif (Auth::user()->can('manage-own-quotations')) {
+                $q->where(function ($inner) {
+                    $inner->where('creator_id', Auth::id())->orWhere('customer_id', Auth::id());
+                });
+                if (Auth::user()->type === 'client') {
+                    $q->where('status', '!=', 'draft');
+                }
+            } else {
+                $q->whereRaw('1 = 0');
+            }
+        });
     }
 
     public function warehouse(): BelongsTo

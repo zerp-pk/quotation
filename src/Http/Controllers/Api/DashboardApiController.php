@@ -24,17 +24,9 @@ class DashboardApiController extends Controller
                 return $this->errorResponse(__('Permission denied'), null, 403);
             }
 
-            $base = fn () => SalesQuotation::query()->where(function ($q) {
-                if (Auth::user()->can('manage-any-quotations')) {
-                    $q->where('created_by', creatorId());
-                } elseif (Auth::user()->can('manage-own-quotations')) {
-                    $q->where(function ($inner) {
-                        $inner->where('creator_id', Auth::id())->orWhere('customer_id', Auth::id());
-                    });
-                } else {
-                    $q->whereRaw('1 = 0');
-                }
-            });
+            // Same visibility as the list, including that a client never sees
+            // drafts, via the single scope on the model.
+            $base = fn () => SalesQuotation::query()->visibleTo();
 
             $byStatus = (clone $base())
                 ->selectRaw('status, COUNT(*) as count, COALESCE(SUM(total_amount), 0) as value')
