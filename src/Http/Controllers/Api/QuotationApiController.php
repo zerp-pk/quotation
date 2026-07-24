@@ -4,7 +4,6 @@ namespace Zerp\Quotation\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Traits\ApiResponseTrait;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -47,7 +46,7 @@ class QuotationApiController extends Controller
             }
 
             $quotations = SalesQuotation::with(['customer:id,name,email', 'items'])
-                ->tap(fn ($q) => $this->scope($q))
+                ->visibleTo()
                 ->when($request->customer_id, fn ($q, $id) => $q->where('customer_id', $id))
                 ->when($request->status, fn ($q, $s) => $q->where('status', $s))
                 ->when($request->search, fn ($q, $s) => $q->where('quotation_number', 'like', "%{$s}%"))
@@ -112,7 +111,7 @@ class QuotationApiController extends Controller
                 return $this->errorResponse(__('Permission denied'), null, 403);
             }
 
-            $quotation = SalesQuotation::where('id', $id)->tap(fn ($q) => $this->scope($q))->first();
+            $quotation = SalesQuotation::where('id', $id)->visibleTo()->first();
             if (!$quotation) {
                 return $this->errorResponse(__('Quotation not found'), null, 404);
             }
@@ -235,25 +234,6 @@ class QuotationApiController extends Controller
         } catch (\Throwable $e) {
             return $this->fail($e);
         }
-    }
-
-    /** Visibility scope, mirroring the web index: manager sees the company, staff/client see their own. */
-    private function scope(Builder $query): void
-    {
-        $query->where(function ($q) {
-            if (Auth::user()->can('manage-any-quotations')) {
-                $q->where('created_by', creatorId());
-            } elseif (Auth::user()->can('manage-own-quotations')) {
-                $q->where(function ($inner) {
-                    $inner->where('creator_id', Auth::id())->orWhere('customer_id', Auth::id());
-                });
-                if (Auth::user()->type === 'client') {
-                    $q->where('status', '!=', 'draft');
-                }
-            } else {
-                $q->whereRaw('1 = 0');
-            }
-        });
     }
 
     /**
